@@ -95,7 +95,6 @@ Measles-BD/
 | `cases_full` | WHO GHO reported cases, 1975–2024 |
 | `mcv1_coverage` | MCV1 coverage by source (WHO, Official, Admin), 2000–2025 |
 | `mcv2_coverage` | MCV2 coverage by source (WHO, Official, Admin), 2012–2025 |
-| `analysis_merged` | Combined coverage + cases for modelling, 2000–2025 |
 | `outbreak_2026_summary` | National-level outbreak metrics (13 key indicators) |
 | `outbreak_2026_divisions` | 8-division aggregation: cases, deaths, CFR |
 | `outbreak_2026_districts` | 60-district breakdown with division label |
@@ -105,41 +104,35 @@ Measles-BD/
 
 ## Analysis Structure
 
-The notebook (`measles_bangladesh_eda.ipynb`) is organised into three fully separate parts — no era mixing:
+The notebook (`measles_bangladesh_eda.ipynb`) is organised into four sections. Parts I–III are kept fully separate — no era mixing. The 2026 outbreak section is placed first in the notebook to establish the contemporary context before the historical analysis.
 
-### Part III — 2026 Outbreak (presented first — demographic context)
-
-- Division choropleth maps with compass rose and scale bar (raw cases, CFR, incidence rate per 100,000)
-- Case cascade: suspected → hospitalised → lab-confirmed → deaths
-- Age-stratified mortality: 92.9% of deaths in children under 18
-- Division-level burden (cases and CFR) as bar charts
-- Pairplot of district-level outbreak variables (Cases, Deaths, CFR, log-scales)
-- **Figures:** fig01–07
-
-### Part I — MCV1 Era (2000–2011)
+### Part I — MCV1 Era (2000–2011) | figs 08–10
 
 - MCV1 coverage trends across three data sources (WHO, Official/Survey, Administrative)
-- Correlation between coverage gaps and annual case burden
 - Immunity gap model: coverage below 95% (herd immunity threshold for measles R₀ ≈ 12–18)
-- Effective reproduction number Rₜ estimated from coverage each year
-- **Figures:** fig08–10
+- Effective reproduction number Rₜ estimated from WHO coverage each year
 
-### Part II — MCV2 Era (2012–2025)
+### Part II — MCV2 Era (2012–2025) | figs 11–16
 
 - MCV1 and MCV2 coverage side-by-side across all sources
 - Administrative overcounting: admin coverage >100% indicates denominator inflation
-- Source discrepancy analysis (admin vs. WHO vs. official)
 - Annual cases + incidence rate (per 100,000) with policy milestones
 - Era comparison (Mann–Whitney U test): MCV1-only vs. MCV2 era
 - Cases averted by MCV2: log-linear counterfactual analysis
 - Cumulative susceptibility model: estimated unprotected children, 2012–2025
-- **Figures:** fig11–16
 
-### Statistical Analysis (Cross-Era)
+### Part III — 2026 Outbreak | figs 01–07 *(presented first in notebook)*
+
+- Division choropleth maps: raw cases, CFR, and incidence rate per 100,000
+- Case cascade: suspected → hospitalised → lab-confirmed → deaths
+- Age-stratified mortality: 92.9% of deaths in children under 18
+- Division-level burden (cases and CFR) as bar charts
+- Pairplot of district-level outbreak variables (Cases, Deaths, CFR, log-scales)
+
+### Statistical Analysis — Cross-Era | figs 17–18
 
 - Pearson correlation heatmap: measles cases vs. MCV1/MCV2 coverage (2000–2026)
 - Log-linear OLS regression: log₁₀(Cases) ~ MCV1 and MCV2 WHO coverage
-- **Figures:** fig17–18
 
 ---
 

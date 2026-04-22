@@ -19,7 +19,7 @@ A reproducible, data-driven epidemiological study of measles burden and vaccinat
 
 ## Overview
 
-Bangladesh introduced the first dose of the measles-containing vaccine (MCV1) into its national immunisation programme in 1979, and added a second dose (MCV2) in 2012. Despite achieving WHO-reported MCV1 coverage above 90% for most of the 2000s, measles outbreaks have continued — most dramatically in 2026, when more than 12,000 suspected cases and 166 deaths were reported in a single outbreak.
+Bangladesh introduced the first dose of the measles-containing vaccine (MCV1) into its national immunisation programme in 1979, and added a second dose (MCV2) in 2012. Despite achieving WHO-reported MCV1 coverage above 90% for most of the 2000s, measles outbreaks have continued — most dramatically in 2026, when more than 25,000 suspected cases and 226 deaths were reported in a single outbreak (as of 20 April 2026; outbreak ongoing).
 
 This study uses WHO Global Health Observatory (GHO) surveillance data alongside official Bangladeshi government sources to:
 
@@ -39,16 +39,18 @@ All figures are produced at 300 DPI using full LaTeX rendering for publication q
 Measles-BD/
 ├── data/
 │   ├── raw/
-│   │   └── data M new.xlsx            # Original source data (3 sheets)
+│   │   ├── data M new.xlsx            # Original source data (3 sheets)
+│   │   └── dghs_daily_updates.csv    # DGHS daily outbreak totals (append new rows here)
 │   ├── processed/
-│   │   ├── measles_bangladesh_consolidated.xlsx   # 7-sheet consolidated dataset
+│   │   ├── measles_bangladesh_consolidated.xlsx   # 8-sheet consolidated dataset
 │   │   └── update_log.txt             # Rebuild timestamps
 │   └── bgd_adm_bbs_20201113_shp/     # BBS 2020 administrative shapefiles
 │       └── bgd_adm_bbs_20201113_SHP/
-│           ├── bgd_admbnda_adm1_bbs_20201113.shp  # Division boundaries (8)
-│           └── bgd_admbnda_adm2_bbs_20201113.shp  # District boundaries (64)
+│           └── bgd_admbnda_adm1_bbs_20201113.shp  # Division boundaries (8 divisions)
 ├── scripts/
-│   └── build_dataset.py               # Dataset builder (WHO GHO API + raw data)
+│   ├── build_dataset.py               # Dataset builder (WHO GHO API + raw data)
+│   ├── fetch_dghs_update.py           # Scrapes BSS News for latest DGHS briefing figures
+│   └── run_pipeline.sh                # Full pipeline: fetch → build → execute notebook
 ├── figures/                           # 18 publication-quality PNG figures (300 DPI)
 │   ├── fig01_2026_division_cases_map.png
 │   ├── fig02_2026_division_cfr_map.png
@@ -98,6 +100,7 @@ Measles-BD/
 | `outbreak_2026_summary` | National-level outbreak metrics (13 key indicators) |
 | `outbreak_2026_divisions` | 8-division aggregation: cases, deaths, CFR |
 | `outbreak_2026_districts` | 60-district breakdown with division label |
+| `outbreak_2026_timeseries` | Daily DGHS cumulative totals with CFR trend |
 | `update_log` | ISO-format rebuild timestamps |
 
 ---
@@ -217,31 +220,31 @@ venv/bin/python scripts/build_dataset.py
 
 ## Automated Data Updates
 
-A GitHub Actions workflow (`.github/workflows/update_data.yml`) runs automatically on weekdays at **06:00 UTC** (noon Bangladesh time, when WHO GHO typically updates):
+`scripts/build_dataset.py` runs automatically on weekdays and rebuilds the consolidated dataset from two sources:
 
 ```
 ┌─────────────────────┐
 │  WHO GHO API        │──→ build_dataset.py ──→ consolidated .xlsx
-│  (WHS3_62, WHS8_110,│                              │
-│   MCV2)             │                              ↓
-└─────────────────────┘                     commit & push to repo
+│  (WHS3_62, WHS8_110,│                 ↑
+│   MCV2)             │                 │
+└─────────────────────┘   data/raw/dghs_daily_updates.csv
+                           (append one row per day with DGHS briefing figures)
 ```
 
-The workflow:
-1. Checks out the repository
-2. Sets up Python 3.13
-3. Installs all dependencies
-4. Runs `scripts/build_dataset.py` (fetches fresh WHO data)
-5. Attempts to execute the notebook via `papermill` (skips gracefully if kernel unavailable in CI)
-6. Commits and pushes any changes to `data/processed/`
+### Updating 2026 outbreak figures daily
 
-The workflow can also be triggered manually from the GitHub Actions UI via `workflow_dispatch`.
+DGHS does not publish a machine-readable API for measles. Figures are released through daily press briefings (reported by BSS News, Daily Star, Dhaka Tribune). To update:
 
-Each time the notebook runs, it reads the update timestamp from the `update_log` sheet and displays:
+1. Open `data/raw/dghs_daily_updates.csv`
+2. Append a row:
+   ```
+   2026-04-22,27500,3950,,195,40,59,DGHS daily briefing
+   ```
+   Columns: `Date, Suspected_Cases, Confirmed_Cases, Hospitalised, Suspected_Deaths, Confirmed_Deaths, Districts_Affected, Source`
+3. Leave any unknown columns blank — the script handles `NaN` gracefully
+4. The next `build_dataset.py` run will pick up the new row automatically
 
-> **Data reflects: DD Month YYYY**
-
-at the top of every output.
+Each time the notebook runs, it reads the update timestamp from the `update_log` sheet and displays the most recent DGHS report date at the top of the 2026 outbreak section.
 
 ---
 

@@ -18,10 +18,22 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 # ── Paths ─────────────────────────────────────────────────────────
-ROOT      = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RAW_FILE  = os.path.join(ROOT, 'data', 'raw', 'data M new.xlsx')
-OUT_FILE  = os.path.join(ROOT, 'data', 'processed', 'measles_bangladesh_consolidated.xlsx')
-LOG_FILE  = os.path.join(ROOT, 'data', 'processed', 'update_log.txt')
+ROOT        = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAW_FILE    = os.path.join(ROOT, 'data', 'raw', 'data M new.xlsx')
+DGHS_CSV    = os.path.join(ROOT, 'data', 'raw', 'dghs_daily_updates.csv')
+OUT_FILE    = os.path.join(ROOT, 'data', 'processed', 'measles_bangladesh_consolidated.xlsx')
+LOG_FILE    = os.path.join(ROOT, 'data', 'processed', 'update_log.txt')
+
+# ── DGHS daily updates CSV ────────────────────────────────────────
+def load_dghs_updates() -> tuple[pd.DataFrame, pd.Series]:
+    """Load dghs_daily_updates.csv; return (full_df, latest_row)."""
+    df = pd.read_csv(DGHS_CSV, parse_dates=['Date'])
+    df = df.sort_values('Date').reset_index(drop=True)
+    latest = df.iloc[-1]
+    print(f"  DGHS CSV: {len(df)} rows, latest entry {latest['Date'].date()} "
+          f"({int(latest['Suspected_Cases'])} suspected, "
+          f"{int(latest['Confirmed_Cases'])} confirmed)")
+    return df, latest
 
 # ── WHO GHO API ────────────────────────────────────────────────────
 GHO_BASE  = 'https://ghoapi.azureedge.net/api'
@@ -59,6 +71,15 @@ def _clean(df, valcol):
     df['Year']  = df['Year'].astype(int)
     df[valcol]  = pd.to_numeric(df['Value'], errors='coerce')
     return df[['Year', valcol]].dropna(subset=[valcol]).reset_index(drop=True)
+
+# ── 0. LOAD DGHS DAILY CSV ────────────────────────────────────────
+print("Loading DGHS daily updates CSV...")
+df_dghs, dghs_latest = load_dghs_updates()
+
+def _dghs(col, fallback=None):
+    """Return latest DGHS value for col, or fallback if NaN."""
+    v = dghs_latest.get(col, np.nan)
+    return fallback if pd.isna(v) else v
 
 # ── 1. FETCH FROM WHO GHO ─────────────────────────────────────────
 print("Fetching WHO GHO data (retries=3)...")
@@ -263,20 +284,33 @@ with pd.ExcelWriter(OUT_FILE, engine='openpyxl') as writer:
     mc2.to_excel(writer, sheet_name='mcv2_coverage', index=False)
 
     # ── Sheet 4: outbreak_2026 ────────────────────────────────────
+    _susp  = int(_dghs('Suspected_Cases', 12320))
+    _conf  = int(_dghs('Confirmed_Cases',  2241))
+    _hosp  = _dghs('Hospitalised',         6883)
+    _sdth  = _dghs('Suspected_Deaths',     np.nan)
+    _cdth  = _dghs('Confirmed_Deaths',     166)
+    _dist  = int(_dghs('Districts_Affected', 61))
+    _src   = str(_dghs('Source', 'DGHS / Hospital sentinel surveillance'))
+    _rdate = str(dghs_latest['Date'].date())
+    _total_dth = (0 if pd.isna(_sdth) else int(_sdth)) + int(_cdth)
+    _cfr   = round(_total_dth / _susp * 100, 2) if _susp else 0.0
+
     outbreak_meta = pd.DataFrame([
-        ['Data type',          'Hospital-based surveillance'],
-        ['Report date',        '2026-04-09'],
-        ['Suspected cases',    12320],
-        ['Lab-confirmed',      2241],
-        ['Hospitalised',       6883],
-        ['Deaths',             166],
-        ['CFR (% of suspected)', round(166/12320*100, 2)],
-        ['% deaths in 0-5 yr', 71.0],
-        ['% deaths in 5-18 yr',12.0],
-        ['% deaths in adults', 17.0],
+        ['Data type',            'Hospital-based surveillance'],
+        ['Report date',          _rdate],
+        ['Suspected cases',      _susp],
+        ['Lab-confirmed',        _conf],
+        ['Hospitalised',         int(_hosp) if not pd.isna(_hosp) else 'N/A'],
+        ['Suspected deaths',     int(_sdth) if not pd.isna(_sdth) else 'N/A'],
+        ['Confirmed deaths',     int(_cdth)],
+        ['Total deaths (susp+conf)', _total_dth],
+        ['CFR (% of suspected)', _cfr],
+        ['% deaths in 0-5 yr',   71.0],
+        ['% deaths in 5-18 yr',  12.0],
+        ['% deaths in adults',   17.0],
         ['% deaths in children (0-18)', 92.86],
-        ['Districts affected', 61],
-        ['Source',             'DGHS / Hospital sentinel surveillance'],
+        ['Districts affected',   _dist],
+        ['Source',               _src],
     ], columns=['Metric', 'Value'])
     outbreak_meta.to_excel(writer, sheet_name='outbreak_2026_summary', index=False)
     df_div[['Division','Districts_affected','Cases','Deaths',
@@ -285,6 +319,14 @@ with pd.ExcelWriter(OUT_FILE, engine='openpyxl') as writer:
     df_dist[['Division','District','Cases','Deaths',
              'Pct_of_total','CFR_pct']].to_excel(
         writer, sheet_name='outbreak_2026_districts', index=False)
+
+    # ── Sheet: outbreak_2026_timeseries ───────────────────────────
+    ts = df_dghs.copy()
+    ts['Date'] = ts['Date'].dt.strftime('%Y-%m-%d')
+    ts['Total_Deaths'] = ts['Suspected_Deaths'].fillna(0).astype(int) + \
+                         ts['Confirmed_Deaths'].fillna(0).astype(int)
+    ts['CFR_pct'] = (ts['Total_Deaths'] / ts['Suspected_Cases'] * 100).round(2)
+    ts.to_excel(writer, sheet_name='outbreak_2026_timeseries', index=False)
 
     # ── Sheet 7: update_log ───────────────────────────────────────
     log_df = pd.DataFrame([{

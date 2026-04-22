@@ -2,12 +2,12 @@ name: Daily Data Update
 
 on:
   schedule:
-    # WHO GHO typically updates on weekdays — run at 06:00 UTC (noon Bangladesh time)
-    - cron: '0 6 * * 1-5'
-  workflow_dispatch:          # allow manual trigger from GitHub UI
+    # Run at 04:45 UTC (10:45 AM Bangladesh) — after DGHS morning briefing
+    - cron: '45 4 * * 1-5'
+  workflow_dispatch:
 
 permissions:
-  contents: write             # needed to commit updated data back to repo
+  contents: write
 
 jobs:
   update-dataset:
@@ -28,26 +28,24 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install pandas numpy openpyxl requests scipy matplotlib seaborn geopandas
+          pip install pandas numpy openpyxl requests beautifulsoup4 \
+                      scipy matplotlib seaborn geopandas papermill nbconvert
 
-      - name: Run dataset builder
+      - name: Fetch latest DGHS outbreak data
+        run: |
+          python scripts/fetch_dghs_update.py && echo "New DGHS data appended." \
+            || echo "No new DGHS data (CSV already current or source unavailable)."
+
+      - name: Rebuild consolidated dataset
         run: python scripts/build_dataset.py
 
-      - name: Execute EDA notebook (papermill)
-        run: |
-          pip install papermill nbconvert
-          papermill measles_bangladesh_eda.ipynb measles_bangladesh_eda.ipynb \
-            --kernel measles-bd \
-            --no-report-mode \
-            2>&1 || echo "Notebook execution skipped (kernel not installed in CI)"
-
-      - name: Commit updated data and notebook
+      - name: Commit updated data
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/raw/dghs_daily_updates.csv
           git add data/processed/measles_bangladesh_consolidated.xlsx
           git add data/processed/update_log.txt
-          git add measles_bangladesh_eda.ipynb || true
           git diff --cached --quiet && echo "No changes to commit" || \
             git commit -m "chore: auto-update dataset $(date -u '+%Y-%m-%d')"
           git push

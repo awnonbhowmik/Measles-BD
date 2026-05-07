@@ -25,3 +25,4 @@
 2026-05-05T07:05:39 — dataset rebuilt OK
 2026-05-06T07:22:51 — DGHS fetch OK: 2026-04-30 (37131 suspected, 49 confirmed deaths)
 2026-05-06T07:22:55 — dataset rebuilt OK
+2026-05-07T07:32:48 — dataset rebuilt OK

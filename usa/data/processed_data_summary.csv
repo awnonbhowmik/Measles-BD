@@ -1,0 +1,38 @@
+state,cumulative_2026_confirmed_cases,data_source,date_filter,outcome_type
+South Carolina,699,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Utah,481,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Texas,181,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Florida,150,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Arizona,90,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+California,48,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Washington,43,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+North Dakota,36,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Pennsylvania,23,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Virginia,23,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+North Carolina,22,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Oregon,22,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Colorado,20,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Minnesota,17,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+New Mexico,16,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Michigan,13,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+New York,11,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Ohio,11,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Idaho,9,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+South Dakota,8,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Maine,5,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Montana,5,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Kentucky,4,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Illinois,4,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Maryland,3,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Nebraska,3,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Rhode Island,2,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Georgia,2,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Massachusetts,2,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Wisconsin,2,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Vermont,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+New Jersey,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Oklahoma,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Missouri,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Louisiana,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Hawaii,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed
+Wyoming,1,Johns Hopkins CSSEGISandData measles_county_all_updates.csv,2026-01-01 through 2026-05-08,case_lab-confirmed

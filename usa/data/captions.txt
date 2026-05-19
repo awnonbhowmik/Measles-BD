@@ -1,0 +1,30 @@
+Figure 1A. Geographic distribution of confirmed measles cases by state in the United States,
+January through May 2026. Colour intensity reflects cumulative laboratory-confirmed case counts
+aggregated from county- and district-level records. Thirty-seven states reported at least one
+confirmed case, with the heaviest burden concentrated in South Carolina, Utah, Texas, and Florida.
+Alaska and Hawaii are not shown on the main map; Hawaii reported one confirmed case during this
+period. Source: Johns Hopkins CSSEGISandData measles_county_all_updates.csv; US Census Bureau
+TIGER/Line state boundaries (2022).
+
+---
+
+Figure 1B. Top ten states by cumulative laboratory-confirmed measles cases in the United States,
+January through 8 May 2026. Bars are sorted from highest to lowest. South Carolina and Utah
+together accounted for approximately 60% of all county-attributed cases during this period.
+Source: Johns Hopkins CSSEGISandData measles_county_all_updates.csv.
+
+---
+
+Figure 1C. Weekly trajectories of laboratory-confirmed measles cases in the six highest-burden
+states, January through 9 May 2026. Each line represents one state, ranked in the legend by
+total 2026 case count (n). A pronounced epidemic peak in South Carolina occurred during the
+week of 8 March 2026; Utah sustained elevated weekly counts throughout March–April 2026.
+Source: Johns Hopkins CSSEGISandData Top_states_time_series.csv.
+
+---
+
+Figure 1D. National kindergarten MMR coverage in the United States by school year, 2019–20
+through 2024–25. The dashed line marks the 95% coverage threshold required for community
+immunity against measles. Coverage has fallen continuously since 2019–20 and remains 2.5
+percentage points below the target in 2024–25, leaving an estimated 286,000 kindergartners
+inadequately protected each year. Source: CDC SchoolVaxView national estimates.

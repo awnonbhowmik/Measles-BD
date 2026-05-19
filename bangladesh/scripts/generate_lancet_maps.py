@@ -23,7 +23,7 @@ SHP_ADM1  = os.path.join(
     'data/bgd_adm_bbs_20201113_shp/bgd_adm_bbs_20201113_SHP',
     'bgd_admbnda_adm1_bbs_20201113.shp',
 )
-LANCET_DIR = os.path.join(ROOT, 'lancet')
+LANCET_DIR = os.path.join(ROOT, 'publication')
 DPI = 300
 
 CMAP = mcolors.LinearSegmentedColormap.from_list(

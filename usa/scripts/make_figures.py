@@ -93,8 +93,11 @@ df2026 = df[
 
 DATE_MAX_DT  = df2026["date"].max()                      # datetime object
 DATE_MAX_STR = DATE_MAX_DT.strftime("%Y-%m-%d")          # terminal / CSV
-DATE_MAX_LBL = DATE_MAX_DT.strftime("%b. %-d")           # "May 8"  (figure subtitles)
-DATE_RANGE_LBL = f"Jan. 1–{DATE_MAX_LBL}, 2026"    # "Jan. 1–May 8, 2026"
+# May, June, July are not abbreviated; all others take a trailing period
+_ABBR = {1:"Jan.",2:"Feb.",3:"Mar.",4:"Apr.",5:"May",6:"June",7:"July",
+         8:"Aug.",9:"Sep.",10:"Oct.",11:"Nov.",12:"Dec."}
+DATE_MAX_LBL   = f"{_ABBR[DATE_MAX_DT.month]} {DATE_MAX_DT.day}"
+DATE_RANGE_LBL = f"Jan. 1–{DATE_MAX_LBL}, 2026"
 
 print(f"\n[Data] File      : {COUNTY_FILE}")
 print(f"[Data] Filter    : outcome_type == 'case_lab-confirmed', 2026-01-01 onward")

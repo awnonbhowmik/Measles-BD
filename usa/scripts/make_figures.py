@@ -30,7 +30,9 @@ from PIL import Image
 
 warnings.filterwarnings("ignore")
 
-OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR   = os.path.join(_SCRIPT_DIR, "..", "data")
+FIG_DIR    = os.path.join(_SCRIPT_DIR, "..", "figures")
 
 # ── Consistent visual style ────────────────────────────────────────────────────
 FIG_W, FIG_H   = 6.5, 5.0
@@ -79,7 +81,7 @@ print("=" * 62)
 print("MEASLES FIGURES — PROCESSING SUMMARY")
 print("=" * 62)
 
-COUNTY_FILE = os.path.join(OUTPUT_DIR, "measles_county_all_updates.csv")
+COUNTY_FILE = os.path.join(DATA_DIR, "measles_county_all_updates.csv")
 df = pd.read_csv(COUNTY_FILE)
 df["date"] = pd.to_datetime(df["date"])
 
@@ -150,7 +152,7 @@ states_conus   = None
 states_ak      = None
 states_hi      = None
 
-SHAPEFILE_DIR  = os.path.join(OUTPUT_DIR, "temp_states")
+SHAPEFILE_DIR  = os.path.join(DATA_DIR, "temp_states")
 SHAPEFILE_PATH = os.path.join(SHAPEFILE_DIR, "cb_2022_us_state_20m.shp")
 SHAPEFILE_URL  = (
     "https://www2.census.gov/geo/tiger/GENZ2022/shp/cb_2022_us_state_20m.zip"
@@ -361,7 +363,7 @@ fig.text(0.50, 0.96, "Measles cases by state in 2026",
 fig.text(0.50, 0.91, SUBTITLE_1A,
          ha="center", va="top", fontsize=SUBTITLE_SIZE, color="#444444")
 
-plt.savefig(os.path.join(OUTPUT_DIR, "figure1A_map.png"), **SAVE_KW)
+plt.savefig(os.path.join(FIG_DIR, "figure1A_map.png"), **SAVE_KW)
 plt.close()
 print("  Saved: figure1A_map.png")
 
@@ -396,7 +398,7 @@ ax.tick_params(axis="y", length=0)
 ax.spines["left"].set_visible(False)
 
 plt.tight_layout()
-plt.savefig(os.path.join(OUTPUT_DIR, "figure1B_top_states_bar.png"), **SAVE_KW)
+plt.savefig(os.path.join(FIG_DIR, "figure1B_top_states_bar.png"), **SAVE_KW)
 plt.close()
 print("  Saved: figure1B_top_states_bar.png")
 
@@ -479,7 +481,7 @@ fig.text(0.57, 0.96, "Weekly measles intensity in high-burden states, 2026",
 fig.text(0.57, 0.915, DATE_RANGE_LBL + "  |  n = cumulative cases per state",
          ha="center", va="top", fontsize=SUBTITLE_SIZE, color="#444444")
 
-plt.savefig(os.path.join(OUTPUT_DIR, "figure1C_weekly_curves.png"), **SAVE_KW)
+plt.savefig(os.path.join(FIG_DIR, "figure1C_weekly_curves.png"), **SAVE_KW)
 plt.close()
 print("  Saved: figure1C_weekly_curves.png")
 
@@ -542,7 +544,7 @@ plt.tight_layout()
 fig.text(0.5, 0.01,
          "Source: CDC SchoolVaxView/MMWR kindergarten vaccination coverage.",
          ha="center", va="bottom", fontsize=6, color="#555555")
-plt.savefig(os.path.join(OUTPUT_DIR, "figure1D_mmr_coverage.png"), **SAVE_KW)
+plt.savefig(os.path.join(FIG_DIR, "figure1D_mmr_coverage.png"), **SAVE_KW)
 plt.close()
 print("  Saved: figure1D_mmr_coverage.png")
 
@@ -554,7 +556,7 @@ summary_df.columns = ["state", "cumulative_2026_confirmed_cases"]
 summary_df["data_source"]  = "Johns Hopkins CSSEGISandData measles_county_all_updates.csv"
 summary_df["date_filter"]  = f"2026-01-01 through {DATE_MAX_STR}"
 summary_df["outcome_type"] = "case_lab-confirmed"
-summary_df.to_csv(os.path.join(OUTPUT_DIR, "processed_data_summary.csv"), index=False)
+summary_df.to_csv(os.path.join(DATA_DIR, "processed_data_summary.csv"), index=False)
 print(f"\n  Saved: processed_data_summary.csv ({len(summary_df)} states)")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -566,7 +568,7 @@ FIGURE_FILES = [
     "figure1C_weekly_curves.png",
     "figure1D_mmr_coverage.png",
 ]
-images = [Image.open(os.path.join(OUTPUT_DIR, f)) for f in FIGURE_FILES]
+images = [Image.open(os.path.join(FIG_DIR, f)) for f in FIGURE_FILES]
 max_w  = max(img.width  for img in images)
 max_h  = max(img.height for img in images)
 
@@ -577,7 +579,7 @@ for fname, img in zip(FIGURE_FILES, images):
     canvas = Image.new("RGB", (max_w, max_h), (255, 255, 255))
     canvas.paste(img.convert("RGB"),
                  ((max_w - img.width) // 2, (max_h - img.height) // 2))
-    canvas.save(os.path.join(OUTPUT_DIR, fname), dpi=(300, 300))
+    canvas.save(os.path.join(FIG_DIR, fname), dpi=(300, 300))
     print(f"  {fname}: {img.width}×{img.height} → {max_w}×{max_h}")
 
 # ══════════════════════════════════════════════════════════════════════════════

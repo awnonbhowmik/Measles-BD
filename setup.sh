@@ -12,9 +12,7 @@ if [ -z "$PYTHON" ]; then
     exit 1
 fi
 PY_VER=$("$PYTHON" -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-PY_MAJ=$("$PYTHON" -c "import sys; print(sys.version_info.major)")
-PY_MIN=$("$PYTHON" -c "import sys; print(sys.version_info.minor)")
-if [ "$PY_MAJ" -lt 3 ] || { [ "$PY_MAJ" -eq 3 ] && [ "$PY_MIN" -lt 13 ]; }; then
+if ! "$PYTHON" -c "import sys; sys.exit(0 if sys.version_info >= (3, 13) else 1)"; then
     echo "ERROR: Python 3.13+ required, found $PY_VER at $PYTHON"
     exit 1
 fi
@@ -48,19 +46,19 @@ echo "Dependencies installed."
 echo "Registering Jupyter kernel 'measles-bd'..."
 venv/bin/python -m ipykernel install --user \
     --name measles-bd \
-    --display-name "Python 3.13 (measles-bd)"
+    --display-name "Python $PY_VER (measles-bd)"
 
 # 6. Build the consolidated dataset
 echo "Building consolidated dataset from WHO GHO + raw data..."
-venv/bin/python scripts/build_dataset.py
+venv/bin/python bangladesh/scripts/build_dataset.py
 
 echo ""
 echo "=== Setup complete ==="
 echo ""
 echo "Launch the notebook interactively:"
-echo "  venv/bin/jupyter notebook measles_bangladesh_eda.ipynb"
+echo "  venv/bin/jupyter notebook bangladesh/measles_bangladesh_eda.ipynb"
 echo ""
 echo "Or execute headlessly:"
 echo "  venv/bin/jupyter nbconvert --to notebook --execute \\"
 echo "    --ExecutePreprocessor.kernel_name=measles-bd \\"
-echo "    measles_bangladesh_eda.ipynb --output measles_bangladesh_eda.ipynb"
+echo "    bangladesh/measles_bangladesh_eda.ipynb --output bangladesh/measles_bangladesh_eda.ipynb"

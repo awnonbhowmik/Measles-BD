@@ -1,94 +1,64 @@
-# Measles in Bangladesh — Epidemiological Analysis (2000–2026)
+# Measles Situation — Epidemiological Analysis (2026)
 
-A reproducible, data-driven epidemiological study of measles burden and vaccination coverage in Bangladesh, covering three distinct analytical periods: the MCV1-only era (2000–2011), the MCV2 era (2012–2025), and the ongoing 2026 outbreak.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Repository Structure](#repository-structure)
-3. [Data Sources](#data-sources)
-4. [Analysis Structure](#analysis-structure)
-5. [Figures](#figures)
-6. [Setup and Reproduction](#setup-and-reproduction)
-7. [Automated Data Updates](#automated-data-updates)
-8. [Requirements](#requirements)
-
----
-
-## Overview
-
-Bangladesh introduced the first dose of the measles-containing vaccine (MCV1) into its national immunisation programme in 1979, and added a second dose (MCV2) in 2012. Despite achieving WHO-reported MCV1 coverage above 90% for most of the 2000s, measles outbreaks have continued — most dramatically in 2026, when more than 25,000 suspected cases and 226 deaths were reported in a single outbreak (as of 20 April 2026; outbreak ongoing).
-
-This study uses WHO Global Health Observatory (GHO) surveillance data alongside official Bangladeshi government sources to:
-
-- Quantify the impact of MCV1 introduction and scale-up (2000–2011)
-- Assess the added benefit — and continuing gaps — from MCV2 (2012–2025)
-- Characterise the 2026 outbreak epidemiology by division, age group, and clinical severity
-- Estimate the cumulative susceptibility pool built up through imperfect vaccination coverage
-- Identify spatial and epidemiological risk patterns using division-level choropleth maps and statistical analysis
-
-All figures are produced at 300 DPI using full LaTeX rendering for publication quality.
+A reproducible, data-driven epidemiological study of the 2026 measles situation across two countries: **Bangladesh** and the **United States**.
 
 ---
 
 ## Repository Structure
 
 ```
-Measles-BD/
-├── data/
-│   ├── raw/
-│   │   ├── data M new.xlsx            # Original source data (3 sheets)
-│   │   └── dghs_daily_updates.csv    # DGHS daily outbreak totals (append new rows here)
-│   ├── processed/
-│   │   ├── measles_bangladesh_consolidated.xlsx   # 8-sheet consolidated dataset
-│   │   └── update_log.txt             # Rebuild timestamps
-│   └── bgd_adm_bbs_20201113_shp/     # BBS 2020 administrative shapefiles
-│       └── bgd_adm_bbs_20201113_SHP/
-│           └── bgd_admbnda_adm1_bbs_20201113.shp  # Division boundaries (8 divisions)
-├── scripts/
-│   ├── build_dataset.py               # Dataset builder (WHO GHO API + raw data)
-│   ├── fetch_dghs_update.py           # Scrapes BSS News for latest DGHS briefing figures
-│   └── run_pipeline.sh                # Full pipeline: fetch → build → execute notebook
-├── figures/                           # 18 publication-quality PNG figures (300 DPI)
-│   ├── fig01_2026_division_cases_map.png
-│   ├── fig02_2026_division_cfr_map.png
-│   ├── fig03_2026_division_incidence_map.png
-│   ├── fig04_2026_case_cascade.png
-│   ├── fig05_2026_age_deaths.png
-│   ├── fig06_2026_division_burden.png
-│   ├── fig07_2026_pairplot.png
-│   ├── fig08_mcv1_era_overview.png
-│   ├── fig09_mcv1_immunity_gap.png
-│   ├── fig10_rt_model.png
-│   ├── fig11_mcv2_era_coverage.png
-│   ├── fig12_coverage_source_gap.png
-│   ├── fig13_cases_incidence_milestones.png
-│   ├── fig14_era_comparison_boxplot.png
-│   ├── fig15_cases_averted.png
-│   ├── fig16_vaccination_gap.png
-│   ├── fig17_correlation_heatmap.png
-│   └── fig18_regression_coverage_cases.png
-├── measles_bangladesh_eda.ipynb       # Main analysis notebook (3 parts, 18 figures)
-├── .github/
-│   └── workflows/
-│       └── update_data.yml            # GitHub Actions: daily automated update
-├── venv/                              # Python 3.13 virtual environment
-└── README.md
+Measles_Situation/
+├── bangladesh/
+│   ├── data/
+│   │   ├── raw/
+│   │   │   ├── data M new.xlsx            # Original source data (3 sheets)
+│   │   │   └── dghs_daily_updates.csv    # DGHS daily outbreak totals (append new rows here)
+│   │   ├── processed/
+│   │   │   ├── measles_bangladesh_consolidated.xlsx   # 8-sheet consolidated dataset
+│   │   │   └── update_log.txt             # Rebuild timestamps
+│   │   └── bgd_adm_bbs_20201113_shp/     # BBS 2020 administrative shapefiles
+│   ├── figures/                           # 18 publication-quality PNGs (300 DPI)
+│   ├── publication/                       # 4 Lancet-ready choropleth maps
+│   ├── scripts/
+│   │   ├── build_dataset.py               # Dataset builder (WHO GHO API + raw data)
+│   │   ├── fetch_dghs_update.py           # Scrapes BSS News for latest DGHS figures
+│   │   ├── generate_lancet_maps.py        # Generates publication choropleth maps
+│   │   └── run_pipeline.sh                # Full pipeline: fetch → build → execute notebook
+│   └── measles_bangladesh_eda.ipynb       # Main analysis notebook (3 parts, 18 figures)
+├── usa/
+│   ├── data/
+│   │   ├── measles_county_all_updates.csv # Johns Hopkins county-level case data
+│   │   ├── processed_data_summary.csv     # State-level summary (generated)
+│   │   └── Top_states_time_series.csv     # Top-state weekly series
+│   ├── figures/                           # 4 publication-quality PNGs (300 DPI)
+│   └── scripts/
+│       └── make_figures.py                # Generates all 4 USA figures
+├── manuscripts/                           # Drafts (Lancet.docx)
+├── references/                            # Reference PDFs
+├── requirements.txt                       # Python dependencies
+├── setup.sh                               # One-shot environment setup
+└── .github/workflows/update_data.yml      # GitHub Actions: daily Bangladesh data update
 ```
 
 ---
 
-## Data Sources
+## Bangladesh Analysis (2000–2026)
 
-| Source | Indicator | Years | URL |
-|--------|-----------|-------|-----|
-| WHO GHO | Measles reported cases (`WHS3_62`) | 1975–2024 | [GHO API](https://ghoapi.azureedge.net/api/WHS3_62) |
-| WHO GHO | MCV1 immunisation coverage (`WHS8_110`) | 2000–2024 | [GHO API](https://ghoapi.azureedge.net/api/WHS8_110) |
-| WHO GHO | MCV2 immunisation coverage (`MCV2`) | 2012–2024 | [GHO API](https://ghoapi.azureedge.net/api/MCV2) |
-| DGHS Bangladesh | 2026 outbreak surveillance (hospital-based) | Jan–Apr 2026 | [DGHS Press Releases](https://dghs.gov.bd/views/latest-news) |
-| BBS 2020 | Administrative shapefiles (divisions & districts) | 2020 | National shapefile |
+A three-era study of measles burden and vaccination coverage:
+
+- **MCV1 era (2000–2011):** coverage trends, immunity gap, and Rₜ estimation
+- **MCV2 era (2012–2025):** dual-dose rollout, administrative overcounting, cases averted
+- **2026 outbreak:** division and district choropleth maps, case cascade, age-stratified mortality, pairplots
+
+### Data Sources
+
+| Source | Indicator | Years |
+|--------|-----------|-------|
+| WHO GHO | Measles reported cases (`WHS3_62`) | 1975–2024 |
+| WHO GHO | MCV1 coverage (`WHS8_110`) | 2000–2024 |
+| WHO GHO | MCV2 coverage (`MCV2`) | 2012–2024 |
+| DGHS Bangladesh | 2026 outbreak surveillance | Jan–May 2026 |
+| BBS 2020 | Administrative shapefiles (divisions) | 2020 |
 
 ### Consolidated Workbook Sheets
 
@@ -96,73 +66,70 @@ Measles-BD/
 |-------|----------|
 | `cases_full` | WHO GHO reported cases, 1975–2024 |
 | `mcv1_coverage` | MCV1 coverage by source (WHO, Official, Admin), 2000–2025 |
-| `mcv2_coverage` | MCV2 coverage by source (WHO, Official, Admin), 2012–2025 |
-| `outbreak_2026_summary` | National-level outbreak metrics (13 key indicators) |
+| `mcv2_coverage` | MCV2 coverage by source, 2012–2025 |
+| `outbreak_2026_summary` | National-level outbreak metrics |
 | `outbreak_2026_divisions` | 8-division aggregation: cases, deaths, CFR |
-| `outbreak_2026_districts` | 60-district breakdown with division label |
+| `outbreak_2026_districts` | 60-district breakdown |
 | `outbreak_2026_timeseries` | Daily DGHS cumulative totals with CFR trend |
-| `update_log` | ISO-format rebuild timestamps |
+| `update_log` | Rebuild timestamps |
 
----
-
-## Analysis Structure
-
-The notebook (`measles_bangladesh_eda.ipynb`) is organised into four sections. Parts I–III are kept fully separate — no era mixing. The 2026 outbreak section is placed first in the notebook to establish the contemporary context before the historical analysis.
-
-### Part I — MCV1 Era (2000–2011) | figs 08–10
-
-- MCV1 coverage trends across three data sources (WHO, Official/Survey, Administrative)
-- Immunity gap model: coverage below 95% (herd immunity threshold for measles R₀ ≈ 12–18)
-- Effective reproduction number Rₜ estimated from WHO coverage each year
-
-### Part II — MCV2 Era (2012–2025) | figs 11–16
-
-- MCV1 and MCV2 coverage side-by-side across all sources
-- Administrative overcounting: admin coverage >100% indicates denominator inflation
-- Annual cases + incidence rate (per 100,000) with policy milestones
-- Era comparison (Mann–Whitney U test): MCV1-only vs. MCV2 era
-- Cases averted by MCV2: log-linear counterfactual analysis
-- Cumulative susceptibility model: estimated unprotected children, 2012–2025
-
-### Part III — 2026 Outbreak | figs 01–07 *(presented first in notebook)*
-
-- Division choropleth maps: raw cases, CFR, and incidence rate per 100,000
-- Case cascade: suspected → hospitalised → lab-confirmed → deaths
-- Age-stratified mortality: 92.9% of deaths in children under 18
-- Division-level burden (cases and CFR) as bar charts
-- Pairplot of district-level outbreak variables (Cases, Deaths, CFR, log-scales)
-
-### Statistical Analysis — Cross-Era | figs 17–18
-
-- Pearson correlation heatmap: measles cases vs. MCV1/MCV2 coverage (2000–2026)
-- Log-linear OLS regression: log₁₀(Cases) ~ MCV1 and MCV2 WHO coverage
-
----
-
-## Figures
+### Figures (Bangladesh)
 
 | Figure | Description |
 |--------|-------------|
-| fig01 | **Choropleth map** — 2026 cases by division (YlOrRd, compass rose, scale bar) |
-| fig02 | **Choropleth map** — 2026 CFR (%) by division (YlOrRd, compass rose, scale bar) |
-| fig03 | **Choropleth map** — 2026 incidence rate per 100,000 by division (BBS 2022 census pop.) |
-| fig04 | 2026 outbreak case cascade — absolute counts and % of suspected cases |
-| fig05 | 2026 outbreak — age distribution of deaths (bar + donut) |
-| fig06 | 2026 outbreak — cases and CFR by division (horizontal bars) |
-| fig07 | **PairGrid** — 2026 district outbreak: scatter (upper), KDE contour (lower), KDE (diagonal) |
-| fig08 | MCV1 coverage (3 sources) and annual cases — MCV1 era (2000–2011) |
-| fig09 | Immunity gap vs. measles burden — bars in red when coverage < 95% |
-| fig10 | Effective reproduction number Rₜ from coverage data (2000–2025); Rₜ = R₀ × (1 − p_eff) |
-| fig11 | MCV1 and MCV2 coverage by source — MCV2 era (2012–2025) |
-| fig12 | Coverage source discrepancy — administrative vs. official vs. WHO |
-| fig13 | Measles cases + incidence rate (per 100,000) with policy milestones (2000–2025) |
-| fig14 | Era comparison boxplot — MCV1-only vs. MCV2 era (Mann–Whitney U) |
-| fig15 | Cases averted by MCV2 — counterfactual log-linear trend analysis (2012–2025) |
-| fig16 | Estimated vaccination gap — annual and cumulative unprotected children (2012–2025) |
-| fig17 | Pearson correlation heatmap — cases vs. MCV1/MCV2 coverage (2000–2026) |
-| fig18 | Log-linear OLS regression — log₁₀(Cases) vs. MCV1 and MCV2 WHO coverage |
+| fig01 | Choropleth — 2026 cases by division |
+| fig02 | Choropleth — 2026 CFR (%) by division |
+| fig03 | Choropleth — 2026 incidence per 100,000 by division |
+| fig04 | 2026 case cascade: suspected → hospitalised → confirmed → deaths |
+| fig05 | 2026 age distribution of deaths |
+| fig06 | 2026 cases and CFR by division (horizontal bars) |
+| fig07 | PairGrid — 2026 district outbreak variables |
+| fig08 | MCV1 coverage (3 sources) and annual cases — MCV1 era |
+| fig09 | Immunity gap vs. measles burden |
+| fig10 | Effective reproduction number Rₜ (2000–2025) |
+| fig11 | MCV1 and MCV2 coverage — MCV2 era |
+| fig12 | Coverage source discrepancy (admin vs. official vs. WHO) |
+| fig13 | Cases + incidence rate with policy milestones (2000–2025) |
+| fig14 | Era comparison boxplot (Mann–Whitney U) |
+| fig15 | Cases averted by MCV2 — counterfactual log-linear analysis |
+| fig16 | Estimated vaccination gap — cumulative unprotected children |
+| fig17 | Pearson correlation heatmap — cases vs. MCV1/MCV2 |
+| fig18 | Log-linear OLS regression — log₁₀(Cases) vs. coverage |
 
-All figures use full LaTeX rendering (`text.usetex = True`) with the `amsmath` and `amssymb` packages.
+### Updating 2026 Outbreak Data
+
+DGHS does not publish a machine-readable API. Figures are released through daily press briefings. To update:
+
+1. Open `bangladesh/data/raw/dghs_daily_updates.csv`
+2. Append a row:
+   ```
+   2026-05-19,28000,4100,,200,42,60,DGHS daily briefing
+   ```
+   Columns: `Date, Suspected_Cases, Confirmed_Cases, Hospitalised, Suspected_Deaths, Confirmed_Deaths, Districts_Affected, Source`
+3. Leave unknown columns blank — the script handles `NaN` gracefully
+4. Run `venv/bin/python bangladesh/scripts/build_dataset.py` to rebuild
+
+---
+
+## USA Analysis (2026)
+
+Four publication-quality figures for a measles letter on the 2026 U.S. outbreak:
+
+| Figure | Description |
+|--------|-------------|
+| figure1A | U.S. choropleth map — lab-confirmed cases by state (with AK/HI insets) |
+| figure1B | Top 10 states — horizontal bar chart of cumulative cases |
+| figure1C | State × week heatmap — weekly case intensity for top 10 states |
+| figure1D | Kindergarten MMR coverage trend (2019–20 to 2024–25) vs. 95% threshold |
+
+**Data source:** Johns Hopkins CSSEGISandData `measles_county_all_updates.csv`; CDC SchoolVaxView for MMR coverage.
+
+Run:
+```bash
+venv/bin/python usa/scripts/make_figures.py
+```
+
+Figures are saved to `usa/figures/`. A state-level summary CSV is written to `usa/data/processed_data_summary.csv`.
 
 ---
 
@@ -170,81 +137,64 @@ All figures use full LaTeX rendering (`text.usetex = True`) with the `amsmath` a
 
 ### Prerequisites
 
-Install system LaTeX (required for figure text rendering) and GDAL/PROJ (for GeoPandas):
+Install system LaTeX (required for Bangladesh figure text rendering) and GDAL/PROJ (for GeoPandas):
 
 ```bash
 # Ubuntu / Debian
 sudo apt install texlive-latex-extra texlive-fonts-recommended cm-super libgdal-dev libproj-dev
 ```
 
-### Quick start (recommended)
-
-Clone the repository, then run the included setup script — it handles everything automatically:
+### Quick start
 
 ```bash
 git clone <repo-url>
-cd Measles-BD
+cd Measles_Situation
 bash setup.sh
 ```
 
 `setup.sh` will:
-1. Create a `venv/` virtual environment using Python 3.13
-2. Install all dependencies from `requirements.txt`
-3. Register the `measles-bd` Jupyter kernel
-4. Fetch fresh data from WHO GHO and build the consolidated dataset
+1. Verify Python 3.13+
+2. Create a `venv/` virtual environment
+3. Install all dependencies from `requirements.txt`
+4. Register the `measles-bd` Jupyter kernel
+5. Fetch fresh WHO GHO data and build the consolidated Bangladesh dataset
 
-### Run the notebook
+### Run the Bangladesh notebook
 
 ```bash
 # Interactive
-venv/bin/jupyter notebook measles_bangladesh_eda.ipynb
+venv/bin/jupyter notebook bangladesh/measles_bangladesh_eda.ipynb
 
-# Headless execution
+# Headless
 venv/bin/jupyter nbconvert --to notebook --execute \
     --ExecutePreprocessor.timeout=360 \
     --ExecutePreprocessor.kernel_name=measles-bd \
-    measles_bangladesh_eda.ipynb \
-    --output measles_bangladesh_eda.ipynb
+    bangladesh/measles_bangladesh_eda.ipynb \
+    --output bangladesh/measles_bangladesh_eda.ipynb
 ```
 
-### Manual setup (if preferred)
+### Manual setup
 
 ```bash
 python3.13 -m venv venv
 venv/bin/pip install -r requirements.txt
 venv/bin/python -m ipykernel install --user --name measles-bd --display-name "Python 3.13 (measles-bd)"
-venv/bin/python scripts/build_dataset.py
+venv/bin/python bangladesh/scripts/build_dataset.py
 ```
 
 ---
 
-## Automated Data Updates
+## Automated Data Updates (Bangladesh)
 
-`scripts/build_dataset.py` runs automatically on weekdays and rebuilds the consolidated dataset from two sources:
+`bangladesh/scripts/build_dataset.py` runs automatically on weekdays via GitHub Actions and rebuilds the consolidated dataset from two sources:
 
 ```
-┌─────────────────────┐
-│  WHO GHO API        │──→ build_dataset.py ──→ consolidated .xlsx
-│  (WHS3_62, WHS8_110,│                 ↑
-│   MCV2)             │                 │
-└─────────────────────┘   data/raw/dghs_daily_updates.csv
-                           (append one row per day with DGHS briefing figures)
+WHO GHO API  ──→  build_dataset.py  ──→  consolidated .xlsx
+                        ↑
+             bangladesh/data/raw/dghs_daily_updates.csv
 ```
 
-### Updating 2026 outbreak figures daily
-
-DGHS does not publish a machine-readable API for measles. Figures are released through daily press briefings (reported by BSS News, Daily Star, Dhaka Tribune). To update:
-
-1. Open `data/raw/dghs_daily_updates.csv`
-2. Append a row:
-   ```
-   2026-04-22,27500,3950,,195,40,59,DGHS daily briefing
-   ```
-   Columns: `Date, Suspected_Cases, Confirmed_Cases, Hospitalised, Suspected_Deaths, Confirmed_Deaths, Districts_Affected, Source`
-3. Leave any unknown columns blank — the script handles `NaN` gracefully
-4. The next `build_dataset.py` run will pick up the new row automatically
-
-Each time the notebook runs, it reads the update timestamp from the `update_log` sheet and displays the most recent DGHS report date at the top of the 2026 outbreak section.
+The workflow also runs `fetch_dghs_update.py` first to scrape the latest DGHS briefing from BSS News and append a new row to the CSV automatically.
 
 ---
 
@@ -252,17 +202,17 @@ Each time the notebook runs, it reads the update timestamp from the `update_log`
 
 | Package | Version |
 |---------|---------|
-| Python | 3.13 |
-| pandas | 3.0.2 |
-| numpy | 2.4.4 |
-| matplotlib | 3.10.8 |
-| seaborn | 0.13.2 |
-| scipy | 1.17.1 |
-| geopandas | 1.1.3 |
-| openpyxl | 3.1.5 |
-| requests | 2.33.1 |
+| Python | ≥ 3.13 |
+| pandas | ≥ 3.0 |
+| numpy | ≥ 2.0 |
+| matplotlib | ≥ 3.10 |
+| seaborn | ≥ 0.13 |
+| scipy | ≥ 1.17 |
+| geopandas | ≥ 1.1 |
+| openpyxl | ≥ 3.1 |
+| requests | ≥ 2.33 |
+| Pillow | ≥ 10.0 |
 | ipykernel | ≥ 6.0 |
-| papermill | ≥ 2.0 |
 | nbconvert | ≥ 7.0 |
 
 System: LaTeX (TeX Live 2023+), GDAL/PROJ (for GeoPandas)

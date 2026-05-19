@@ -33,19 +33,19 @@ jobs:
 
       - name: Fetch latest DGHS outbreak data
         run: |
-          python scripts/fetch_dghs_update.py && echo "New DGHS data appended." \
+          python bangladesh/scripts/fetch_dghs_update.py && echo "New DGHS data appended." \
             || echo "No new DGHS data (CSV already current or source unavailable)."
 
       - name: Rebuild consolidated dataset
-        run: python scripts/build_dataset.py
+        run: python bangladesh/scripts/build_dataset.py
 
       - name: Commit updated data
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/raw/dghs_daily_updates.csv
-          git add data/processed/measles_bangladesh_consolidated.xlsx
-          git add data/processed/update_log.txt
+          git add bangladesh/data/raw/dghs_daily_updates.csv
+          git add bangladesh/data/processed/measles_bangladesh_consolidated.xlsx
+          git add bangladesh/data/processed/update_log.txt
           git diff --cached --quiet && echo "No changes to commit" || \
             git commit -m "chore: auto-update dataset $(date -u '+%Y-%m-%d')"
           git push

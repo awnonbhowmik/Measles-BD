@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# scripts/run_pipeline.sh
+# bangladesh/scripts/run_pipeline.sh
 # Full daily pipeline:
 #   1. Fetch latest DGHS data from BSS News → dghs_daily_updates.csv
 #   2. Rebuild consolidated Excel dataset (WHO GHO API + raw data)
 #   3. Re-execute the analysis notebook and regenerate all figures
 #
-# Designed to be run from the project root, e.g. via cron:
-#   45 4 * * 1-5 /home/abhowmik/Desktop/Measles-BD/scripts/run_pipeline.sh
+# Designed to be run from the repo root, e.g. via cron:
+#   45 4 * * 1-5 /home/abhowmik/Desktop/Measles_Situation/bangladesh/scripts/run_pipeline.sh
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(dirname "$SCRIPT_DIR")"
-VENV="$ROOT/venv/bin"
+ROOT="$(dirname "$SCRIPT_DIR")"          # bangladesh/
+REPO_ROOT="$(dirname "$ROOT")"           # Measles_Situation/
+VENV="$REPO_ROOT/venv/bin"
 LOG="$ROOT/data/processed/update_log.txt"
 
 cd "$ROOT"

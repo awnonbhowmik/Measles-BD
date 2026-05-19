@@ -128,8 +128,7 @@ print(f"  MCV2 WHO: {len(df_mcv2_who)} rows  ({df_mcv2_who.Year.min()}–{df_mcv
 
 # ── 2. LOAD ORIGINAL EXCEL DATA ───────────────────────────────────
 print("\nLoading original Excel data...")
-import openpyxl as _oxl
-wb_raw = _oxl.load_workbook(RAW_FILE)
+wb_raw = openpyxl.load_workbook(RAW_FILE)
 
 # -- Sheet 'data': historical multi-source coverage + cases --------
 ws_d = wb_raw['data']
